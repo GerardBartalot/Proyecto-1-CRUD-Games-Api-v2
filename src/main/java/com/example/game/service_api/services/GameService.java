@@ -6,4 +6,9 @@ public interface GameService {
     Game saveGame(Game gameRequest);
 
     Game getGameById(String id);
+
+    Game updateGameByCriteria(String id, String name, Game game);
+
+    Game deleteGameByCriteria(String id, String name);
+
 }
