@@ -1,4 +1,4 @@
-package com.example.game.service_api.entities;
+package com.example.game.service_api.commons.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
