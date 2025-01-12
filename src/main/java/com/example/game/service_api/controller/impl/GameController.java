@@ -5,6 +5,7 @@ import com.example.game.service_api.controller.GameApi;
 import com.example.game.service_api.services.GameService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +17,9 @@ public class GameController implements GameApi {
     }
 
     @Override
-    public ResponseEntity<Game> saveGame (@RequestBody Game game) {
+    public ResponseEntity<Game> saveGame(@RequestHeader("userIdRequest") String userId, @RequestBody Game game) {
+        System.out.println(userId);
+
         Game gameCreated = this.gameService.saveGame(game);
         return ResponseEntity.ok(gameCreated);
     }
@@ -37,5 +40,5 @@ public class GameController implements GameApi {
         Game deletedGame = gameService.deleteGameByCriteria(id, name);
         return ResponseEntity.ok(deletedGame);
     }
-
 }
+
