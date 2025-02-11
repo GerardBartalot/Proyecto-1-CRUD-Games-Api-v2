@@ -17,11 +17,11 @@ import java.util.Date;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long gameId;
+    @Column(nullable = false, unique = true, name = "id")
+    private Long id;
 
     @Column(nullable = false, unique = true, name = "name")
-    private String gameName;
+    private String name;
 
     @Column(nullable = false, name = "created by")
     private String createdByUser;

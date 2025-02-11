@@ -30,33 +30,33 @@ public class GameController implements GameApi {
     }
 
     @Override
-    public ResponseEntity<Object> getGame(String gameId, String gameName, String createdByUser, String genre,
+    public ResponseEntity<Object> getGame(Long id, String name, String createdByUser, String genre,
                                           String platforms, Integer releaseYear, String company, Double rating,
                                           Double price, String updatedByUser, Date createdAt, Date updatedAt) {
-        return ResponseEntity.ok(this.gameService.getGame(gameId, gameName, createdByUser, genre, platforms,
+        return ResponseEntity.ok(this.gameService.getGame(id, name, createdByUser, genre, platforms,
                                                         releaseYear, company, rating, price, updatedByUser,
                                                         createdAt, updatedAt));
     }
 
     @Override
-    public ResponseEntity<Object> updateGame(String updatedByUser, String gameId, String gameName, String createdByUser,
+    public ResponseEntity<Object> updateGame(String updatedByUser, Long id, String name, String createdByUser,
                                                     String genre, String platforms, Integer releaseYear,
                                                     String company, Double rating, Double price,
                                                     Date createdAt, Date updatedAt, Game game) {
         game.setUpdatedByUser(updatedByUser);
 
         return ResponseEntity.ok(this.gameService.updateGame(
-                gameId, gameName, createdByUser, genre, platforms, releaseYear, company, rating, price,
+                id, name, createdByUser, genre, platforms, releaseYear, company, rating, price,
                 updatedByUser, createdAt, updatedAt, game
         ));
     }
 
     @Override
-    public ResponseEntity<Object> deleteGame(String gameId, String gameName, String createdByUser,
+    public ResponseEntity<Object> deleteGame(Long id, String name, String createdByUser,
                                                       String genre, String platforms, Integer releaseYear,
                                                       String company, Double rating, Double price,
                                                       String updatedByUser, Date createdAt, Date updatedAt) {
-        Game deletedGame = (Game) gameService.deleteGame(gameId, gameName, createdByUser, genre, platforms,
+        Game deletedGame = (Game) gameService.deleteGame(id, name, createdByUser, genre, platforms,
                                                         releaseYear, company, rating, price, updatedByUser,
                                                         createdAt, updatedAt);
         return ResponseEntity.ok(deletedGame);

@@ -23,7 +23,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(Game gameRequest) {
-        if (gameRepository.findByGameName(gameRequest.getGameName()).isPresent()) {
+        if (gameRepository.findByName(gameRequest.getName()).isPresent()) {
             throw new GameException(HttpStatus.CONFLICT, "This game already exists");
         } else {
             return this.gameRepository.save(gameRequest);
@@ -36,12 +36,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object getGame(String gameId, String gameName, String createdByUser, String genre, String platforms,
+    public Object getGame(Long id, String name, String createdByUser, String genre, String platforms,
                           Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
                           Date createdAt, Date updatedAt) {
-        if (gameId != null) {
+        if (id != null) {
             try {
-                Long id = Long.parseLong(gameId);
                 return gameRepository.findById(id)
                         .orElseThrow(() -> new GameException(HttpStatus.NOT_FOUND, "No games found with this id"));
             } catch (NumberFormatException e) {
@@ -49,8 +48,8 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        if (gameName != null) {
-            return gameRepository.findByGameName(gameName)
+        if (name != null) {
+            return gameRepository.findByName(name)
                     .orElseThrow(() -> new GameException(HttpStatus.NOT_FOUND, "No games found with this name"));
         }
 
@@ -167,15 +166,15 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object updateGame(String gameId, String gameName, String createdByUser, String genre, String platforms,
+    public Object updateGame(Long id, String name, String createdByUser, String genre, String platforms,
                              Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
                              Date createdAt, Date updatedAt, Game game) {
 
         Object result;
 
-        // 📌 Si se pasa gameId o gameName, buscamos solo un juego.
-        if (gameId != null || gameName != null) {
-            result = getGame(gameId, gameName, null, null, null, null, null, null
+        // Si se pasa gameId o gameName, buscamos solo un juego.
+        if (id != null || name != null) {
+            result = getGame(id, name, null, null, null, null, null, null
                     , null, null, null, null);
 
             if (result instanceof Game existingGame) {
@@ -187,7 +186,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        // 📌 Si no se pasó gameId o gameName, buscamos múltiples juegos usando otros filtros.
+        // Si no se pasó gameId o gameName, buscamos múltiples juegos usando otros filtros.
         result = getGame(null, null, createdByUser, genre, platforms, releaseYear, company, rating,
                 price, updatedByUser, createdAt, updatedAt);
 
@@ -214,8 +213,8 @@ public class GameServiceImpl implements GameService {
                                           String updatedByUser, Date createdAt, Date updatedAt, Game game) {
         boolean updated = false;
 
-        if (game.getGameName() != null) {
-            existingGame.setGameName(game.getGameName());
+        if (game.getName() != null) {
+            existingGame.setName(game.getName());
             updated = true;
         }
 
@@ -271,11 +270,11 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object deleteGame(String gameId, String gameName, String createdByUser, String genre, String platforms,
+    public Object deleteGame(Long id, String name, String createdByUser, String genre, String platforms,
                              Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
                              Date createdAt, Date updatedAt) {
 
-        Object result = getGame(gameId, gameName, createdByUser, genre, platforms, releaseYear, company, rating,
+        Object result = getGame(id, name, createdByUser, genre, platforms, releaseYear, company, rating,
                             price, updatedByUser, createdAt, updatedAt);
 
         if (result instanceof Game gameToDelete) {

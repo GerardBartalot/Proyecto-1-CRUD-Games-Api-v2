@@ -10,18 +10,20 @@ import java.util.List;
 
 @RequestMapping(ApiPathVariables.API_ROUTE + ApiPathVariables.GAME_ROUTE)
 public interface GameApi {
+
     @PostMapping ("/create")
     ResponseEntity<Game> createGame(
             @RequestHeader("createdByUserRequest") String createdByUser,
             @RequestBody Game game);
+
 
     @GetMapping("/all")
     ResponseEntity<List<Game>> getAllGames();
 
     @GetMapping("/details")
     ResponseEntity<Object> getGame(
-            @RequestParam(required = false) String gameId,
-            @RequestParam(required = false) String gameName,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String createdByUser,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,
@@ -36,8 +38,8 @@ public interface GameApi {
     @PutMapping("/update")
     ResponseEntity<Object> updateGame(
             @RequestHeader("updatedByUserRequest") String updatedByUser,
-            @RequestParam(required = false) String gameId,
-            @RequestParam(required = false) String gameName,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String createdByUser,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,
@@ -51,8 +53,8 @@ public interface GameApi {
 
     @DeleteMapping("/delete")
     ResponseEntity<Object> deleteGame(
-            @RequestParam(required = false) String gameId,
-            @RequestParam(required = false) String gameName,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String createdByUser,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
-    Optional<Game> findByGameName(String gameName);
+    Optional<Game> findByName(String name);
     List<Game> findByCreatedByUser(String createdByUser);
     List<Game> findByGenre(String genre);
     List<Game> findByPlatforms(String platforms);
