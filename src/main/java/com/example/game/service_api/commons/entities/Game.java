@@ -23,8 +23,11 @@ public class Game {
     @Column(nullable = false, unique = true, name = "name")
     private String name;
 
-    @Column(nullable = false, name = "created by")
-    private String createdByUser;
+    @Column(name = "creator id")
+    private Long creatorUserId;
+
+    @Column(name = "creator username")
+    private String creatorUsername;
 
     @Column(name = "genre")
     private String genre;
@@ -44,8 +47,11 @@ public class Game {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "updated by")
-    private String updatedByUser;
+    @Column(name = "updator id")
+    private Long updatorUserId;
+
+    @Column(name = "updator username")
+    private String updatorUsername;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

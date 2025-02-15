@@ -9,14 +9,17 @@ import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findByName(String name);
-    List<Game> findByCreatedByUser(String createdByUser);
+    List<Game> findByCreatorUserId(Long creatorUserId);
+    List<Game> findByCreatorUsername(String creatorUsername);
     List<Game> findByGenre(String genre);
     List<Game> findByPlatforms(String platforms);
     List<Game> findByReleaseYear(Integer releaseYear);
     List<Game> findByCompany(String company);
     List<Game> findByRating(Double rating);
     List<Game> findByPrice(Double price);
-    List<Game> findByUpdatedByUser(String updatedByUser);
+    List<Game> findByUpdatorUserId(Long updatorUserId);
+    List<Game> findByUpdatorUsername(String updatorUsername);
     List<Game> findByCreatedAt(Date createdAt);
     List<Game> findByUpdatedAt(Date updatedAt);
+
 }

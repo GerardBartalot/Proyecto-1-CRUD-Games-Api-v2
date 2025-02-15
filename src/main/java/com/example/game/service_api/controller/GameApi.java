@@ -1,6 +1,8 @@
 package com.example.game.service_api.controller;
 
 import com.example.game.service_api.commons.constants.ApiPathVariables;
+import com.example.game.service_api.commons.dto.GamePostRequest;
+import com.example.game.service_api.commons.dto.GamePutRequest;
 import com.example.game.service_api.commons.entities.Game;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +15,9 @@ public interface GameApi {
 
     @PostMapping ("/create")
     ResponseEntity<Game> createGame(
-            @RequestHeader("createdByUserRequest") String createdByUser,
-            @RequestBody Game game);
+            @RequestHeader("creatorUserIdRequest") Long creatorUserId,
+            @RequestHeader("creatorUsername") String creatorUsername,
+            @RequestBody GamePostRequest gamePostRequest);
 
 
     @GetMapping("/all")
@@ -24,23 +27,27 @@ public interface GameApi {
     ResponseEntity<Object> getGame(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String createdByUser,
+            @RequestParam(required = false) Long creatorUserId,
+            @RequestParam(required = false) String creatorUsername,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,
             @RequestParam(required = false) Integer releaseYear,
             @RequestParam(required = false) String company,
             @RequestParam(required = false) Double rating,
             @RequestParam(required = false) Double price,
-            @RequestParam(required = false) String updatedByUser,
+            @RequestParam(required = false) Long updatorUserId,
+            @RequestParam(required = false) String updatorUsername,
             @RequestParam(required = false) Date createdAt,
             @RequestParam(required = false) Date updatedAt);
 
     @PutMapping("/update")
     ResponseEntity<Object> updateGame(
-            @RequestHeader("updatedByUserRequest") String updatedByUser,
+            @RequestHeader("updatorUserIdRequest") Long updatorUserId,
+            @RequestHeader("updatorUsernameRequest") String updatorUsername,
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String createdByUser,
+            @RequestParam(required = false) Long creatorUserId,
+            @RequestParam(required = false) String creatorUsername,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,
             @RequestParam(required = false) Integer releaseYear,
@@ -49,20 +56,22 @@ public interface GameApi {
             @RequestParam(required = false) Double price,
             @RequestParam(required = false) Date createdAt,
             @RequestParam(required = false) Date updatedAt,
-            @RequestBody(required = false) Game game);
+            @RequestBody (required = false) GamePutRequest gamePutRequest);
 
     @DeleteMapping("/delete")
     ResponseEntity<Object> deleteGame(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String createdByUser,
+            @RequestParam(required = false) Long creatorUserId,
+            @RequestParam(required = false) String creatorUsername,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String platforms,
             @RequestParam(required = false) Integer releaseYear,
             @RequestParam(required = false) String company,
             @RequestParam(required = false) Double rating,
             @RequestParam(required = false) Double price,
-            @RequestParam(required = false) String updatedByUser,
+            @RequestParam(required = false) Long updatorUserId,
+            @RequestParam(required = false) String updatorUsername,
             @RequestParam(required = false) Date createdAt,
             @RequestParam(required = false) Date updatedAt);
 }

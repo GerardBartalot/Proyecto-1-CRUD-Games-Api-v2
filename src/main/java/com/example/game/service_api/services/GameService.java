@@ -10,15 +10,15 @@ public interface GameService {
 
     List<Game> getAllGames();
 
-    Object getGame(Long id, String name, String createdByUser, String genre, String platforms,
-                   Integer releaseYear, String company, Double rating, Double price, String updatedByUser, Date createdAt,
-                   Date updatedAt);
+    Object getGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre, String platforms,
+                   Integer releaseYear, String company, Double rating, Double price, Long updatorUserId, String updatorUsername,
+                   Date createdAt, Date updatedAt);
 
-    Object updateGame(Long id, String name, String createdByUser, String genre, String platforms,
-                    Integer releaseYear, String company, Double rating, Double price, String updatedByUser, Date createdAt,
-                      Date updatedAt, Game game);
+    Object updateGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre, String platforms,
+                    Integer releaseYear, String company, Double rating, Double price, Long updatorUserId, String updatorUsername,
+                      Date createdAt, Date updatedAt, Game game);
 
-    Object deleteGame(Long id, String name, String createdByUser, String genre, String platforms,
-                      Integer releaseYear, String company, Double rating, Double price, String updatedByUser, Date createdAt,
-                      Date updatedAt);
+    Object deleteGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre, String platforms,
+                      Integer releaseYear, String company, Double rating, Double price, Long updatorUserId, String updatorUsername,
+                      Date createdAt, Date updatedAt);
 }

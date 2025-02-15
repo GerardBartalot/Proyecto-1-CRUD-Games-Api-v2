@@ -36,9 +36,10 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object getGame(Long id, String name, String createdByUser, String genre, String platforms,
-                          Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
-                          Date createdAt, Date updatedAt) {
+    public Object getGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre,
+                          String platforms, Integer releaseYear, String company, Double rating,
+                          Double price, Long updatorUserId, String updatorUsername, Date createdAt,
+                          Date updatedAt) {
         if (id != null) {
             try {
                 return gameRepository.findById(id)
@@ -54,15 +55,25 @@ public class GameServiceImpl implements GameService {
         }
 
         // Si no se pasa ni ID ni Name, aplicar filtros
-        if (createdByUser == null && genre == null && platforms == null && releaseYear == null && company == null
-                && rating == null && updatedByUser == null && createdAt == null && updatedAt == null) {
+        if (creatorUserId == null && creatorUsername == null && genre == null && platforms == null && releaseYear == null
+                && company == null && rating == null && updatorUserId == null && updatorUsername == null && createdAt == null
+                && updatedAt == null) {
             throw new GameException(HttpStatus.BAD_REQUEST, "At least one filter must be provided");
         }
 
         List<Game> games = gameRepository.findAll();
 
-        if (createdByUser != null) {
-            List<Game> filtered = gameRepository.findByCreatedByUser(createdByUser);
+        if (creatorUserId != null) {
+            List<Game> filtered = gameRepository.findByCreatorUserId(creatorUserId);
+            if (filtered.isEmpty()) {
+                throw new GameException(HttpStatus.NOT_FOUND,("No games found with this creator name"));
+            } else {
+                games.retainAll(filtered);
+            }
+        }
+
+        if (creatorUsername != null) {
+            List<Game> filtered = gameRepository.findByCreatorUsername(creatorUsername);
             if (filtered.isEmpty()) {
                 throw new GameException(HttpStatus.NOT_FOUND,("No games found with this creator name"));
             } else {
@@ -131,8 +142,17 @@ public class GameServiceImpl implements GameService {
             }
         }
 
-        if (updatedByUser != null) {
-            List<Game> filtered = gameRepository.findByUpdatedByUser(updatedByUser);
+        if (updatorUserId != null) {
+            List<Game> filtered = gameRepository.findByUpdatorUserId(updatorUserId);
+            if (filtered.isEmpty()) {
+                throw new GameException(HttpStatus.NOT_FOUND,("No games found with this updater name"));
+            } else {
+                games.retainAll(filtered);
+            }
+        }
+
+        if (updatorUsername != null) {
+            List<Game> filtered = gameRepository.findByUpdatorUsername(updatorUsername);
             if (filtered.isEmpty()) {
                 throw new GameException(HttpStatus.NOT_FOUND,("No games found with this updater name"));
             } else {
@@ -166,29 +186,29 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object updateGame(Long id, String name, String createdByUser, String genre, String platforms,
-                             Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
-                             Date createdAt, Date updatedAt, Game game) {
+    public Object updateGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre, String platforms,
+                             Integer releaseYear, String company, Double rating, Double price, Long updatorUserId,
+                             String updatorUsername, Date createdAt, Date updatedAt, Game game) {
 
         Object result;
 
-        // Si se pasa gameId o gameName, buscamos solo un juego.
+        // Si se pasa id o name, buscamos solo un juego.
         if (id != null || name != null) {
-            result = getGame(id, name, null, null, null, null, null, null
-                    , null, null, null, null);
+            result = getGame(id, name, null, null, null, null, null,
+                    null, null, null, null, null, null, null);
 
             if (result instanceof Game existingGame) {
-                updateOnlyProvidedFields(existingGame, createdByUser, genre, platforms, releaseYear, company, rating,
-                        price, updatedByUser, createdAt, updatedAt, game);
+                updateOnlyProvidedFields(existingGame, creatorUserId, creatorUsername, genre, platforms, releaseYear, company,
+                        rating, price, updatorUserId, updatorUsername, createdAt, updatedAt, game);
                 return gameRepository.save(existingGame);
             } else {
-                throw new GameException(HttpStatus.NOT_FOUND, "No game found with the given gameId or gameName.");
+                throw new GameException(HttpStatus.NOT_FOUND, "No game found with the given id or name.");
             }
         }
 
-        // Si no se pasó gameId o gameName, buscamos múltiples juegos usando otros filtros.
-        result = getGame(null, null, createdByUser, genre, platforms, releaseYear, company, rating,
-                price, updatedByUser, createdAt, updatedAt);
+        // Si no se pasó id o name, buscamos múltiples juegos usando otros filtros.
+        result = getGame(null, null, creatorUserId, creatorUsername, genre, platforms, releaseYear, company, rating,
+                price, updatorUserId, updatorUsername, createdAt, updatedAt);
 
         if (result instanceof List) {
             List<Game> gamesToUpdate = (List<Game>) result;
@@ -198,8 +218,8 @@ public class GameServiceImpl implements GameService {
             }
 
             for (Game existingGame : gamesToUpdate) {
-                updateOnlyProvidedFields(existingGame, createdByUser, genre, platforms, releaseYear, company, rating,
-                        price, updatedByUser, createdAt, updatedAt, game);
+                updateOnlyProvidedFields(existingGame, creatorUserId, creatorUsername, genre, platforms, releaseYear, company,
+                        rating, price, updatorUserId, updatorUsername, createdAt, updatedAt, game);
             }
 
             return gameRepository.saveAll(gamesToUpdate);
@@ -208,9 +228,9 @@ public class GameServiceImpl implements GameService {
         throw new GameException(HttpStatus.NOT_FOUND, "No games found to update.");
     }
 
-    private void updateOnlyProvidedFields(Game existingGame, String createdByUser, String genre, String platforms,
-                                          Integer releaseYear, String company, Double rating, Double price,
-                                          String updatedByUser, Date createdAt, Date updatedAt, Game game) {
+    private void updateOnlyProvidedFields(Game existingGame, Long creatorUserId, String creatorUsername, String genre,
+                                          String platforms, Integer releaseYear, String company, Double rating, Double price,
+                                          Long updatorUserId, String updatorUsername, Date createdAt, Date updatedAt, Game game) {
         boolean updated = false;
 
         if (game.getName() != null) {
@@ -218,8 +238,13 @@ public class GameServiceImpl implements GameService {
             updated = true;
         }
 
-        if (game.getCreatedByUser() != null) {
-            existingGame.setCreatedByUser(game.getCreatedByUser());
+        if (game.getCreatorUserId() != null) {
+            existingGame.setCreatorUserId(game.getCreatorUserId());
+            updated = true;
+        }
+
+        if (game.getCreatorUsername() != null) {
+            existingGame.setCreatorUsername(game.getCreatorUsername());
             updated = true;
         }
 
@@ -253,8 +278,13 @@ public class GameServiceImpl implements GameService {
             updated = true;
         }
 
-        if (game.getUpdatedByUser() != null) {
-            existingGame.setUpdatedByUser(game.getUpdatedByUser());
+        if (game.getUpdatorUserId() != null) {
+            existingGame.setUpdatorUserId(game.getUpdatorUserId());
+            updated = true;
+        }
+
+        if (game.getUpdatorUsername() != null) {
+            existingGame.setUpdatorUsername(game.getUpdatorUsername());
             updated = true;
         }
 
@@ -270,12 +300,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Object deleteGame(Long id, String name, String createdByUser, String genre, String platforms,
-                             Integer releaseYear, String company, Double rating, Double price, String updatedByUser,
-                             Date createdAt, Date updatedAt) {
+    public Object deleteGame(Long id, String name, Long creatorUserId, String creatorUsername, String genre, String platforms,
+                             Integer releaseYear, String company, Double rating, Double price, Long updatorUserId,
+                             String updatorUsername, Date createdAt, Date updatedAt) {
 
-        Object result = getGame(id, name, createdByUser, genre, platforms, releaseYear, company, rating,
-                            price, updatedByUser, createdAt, updatedAt);
+        Object result = getGame(id, name, creatorUserId, creatorUsername, genre, platforms, releaseYear, company, rating,
+                            price, updatorUserId, updatorUsername, createdAt, updatedAt);
 
         if (result instanceof Game gameToDelete) {
             gameRepository.delete(gameToDelete);
